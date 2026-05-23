@@ -1,26 +1,25 @@
 import { motion } from "framer-motion";
 import { AIStatusOrb, type OrbState } from "./AIStatusOrb";
-
-const states: { s: OrbState; title: string; body: string }[] = [
-  { s: "idle", title: "Standing by", body: "A faint warm dot in the corner of vision. No light, no sound — just presence." },
-  { s: "listening", title: "Listening", body: "Cyan rings breathe in. A soft tone in your earbuds confirms you've been heard." },
-  { s: "thinking", title: "Understanding", body: "The dot rotates ember. Halo is parsing intent and context — the world stays unblocked." },
-  { s: "acting", title: "Acting", body: "Cyan pulse, then it dissolves. Information that's done its job, leaves." },
-];
+import { useT } from "@/lib/i18n";
 
 export function AmbientStates() {
+  const { t } = useT();
+  const states: { s: OrbState; title: string; body: string }[] = [
+    { s: "idle", title: t("amb.idle.t"), body: t("amb.idle.b") },
+    { s: "listening", title: t("amb.listening.t"), body: t("amb.listening.b") },
+    { s: "thinking", title: t("amb.thinking.t"), body: t("amb.thinking.b") },
+    { s: "acting", title: t("amb.acting.t"), body: t("amb.acting.b") },
+  ];
+
   return (
     <section className="relative py-32">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-16 max-w-2xl">
-          <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-hud">Ambient Language</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-hud">{t("amb.eyebrow")}</p>
           <h2 className="mt-3 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-            Four states.<br />That's the whole interface.
+            {t("amb.title1")}<br />{t("amb.title2")}
           </h2>
-          <p className="mt-6 text-balance text-ink-dim">
-            Halo doesn't show you a desktop. It shows you whether it's listening,
-            thinking, or acting — and otherwise gets out of the way.
-          </p>
+          <p className="mt-6 text-balance text-ink-dim">{t("amb.body")}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,12 +1,9 @@
 import { motion } from "framer-motion";
-
-const lines = [
-  "The screen has had its decade.",
-  "We stopped looking up.",
-  "Halo gives the world back its foreground.",
-];
+import { useT } from "@/lib/i18n";
 
 export function Manifesto() {
+  const { t } = useT();
+  const lines = [t("manifesto.l1"), t("manifesto.l2"), t("manifesto.l3")];
   return (
     <section className="relative py-44">
       <div className="mx-auto max-w-5xl px-6">

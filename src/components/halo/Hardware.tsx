@@ -1,47 +1,48 @@
 import { motion } from "framer-motion";
 import glassesImg from "@/assets/product-glasses.jpg";
 import earbudsImg from "@/assets/product-earbuds.jpg";
+import { useT } from "@/lib/i18n";
 
 export function Hardware() {
+  const { t } = useT();
   return (
     <section id="hardware" className="relative py-32">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-16 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-hud">The Hardware</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-hud">{t("hw.eyebrow")}</p>
             <h2 className="mt-3 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-              Two devices.<br />One ambient surface.
+              {t("hw.title1")}<br />{t("hw.title2")}
             </h2>
           </div>
-          <p className="max-w-sm text-sm text-ink-dim">
-            Halo OS runs on commodity hardware: a pair of waveguide smart glasses
-            and any Bluetooth earbuds. No new ecosystem required.
-          </p>
+          <p className="max-w-sm text-sm text-ink-dim">{t("hw.body")}</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <ProductCard
             image={glassesImg}
-            tag="Halo Frames"
-            title="Smart Glasses"
+            tag={t("hw.glasses.tag")}
+            title={t("hw.glasses.title")}
+            gen={t("hw.gen")}
             specs={[
-              { k: "Display", v: "Stereo waveguide · 1080p" },
-              { k: "FOV", v: "110°" },
-              { k: "Weight", v: "62 g" },
-              { k: "Battery", v: "8 h mixed use" },
-              { k: "Input", v: "Gaze · Voice · Gesture" },
+              { k: t("hw.g1k"), v: t("hw.g1v") },
+              { k: t("hw.g2k"), v: t("hw.g2v") },
+              { k: t("hw.g3k"), v: t("hw.g3v") },
+              { k: t("hw.g4k"), v: t("hw.g4v") },
+              { k: t("hw.g5k"), v: t("hw.g5v") },
             ]}
           />
           <ProductCard
             image={earbudsImg}
-            tag="Halo Buds"
-            title="Wireless Audio"
+            tag={t("hw.buds.tag")}
+            title={t("hw.buds.title")}
+            gen={t("hw.gen")}
             specs={[
-              { k: "Driver", v: "11 mm dynamic" },
-              { k: "Latency", v: "< 60 ms" },
-              { k: "Codec", v: "LC3 · aptX Adaptive" },
-              { k: "Battery", v: "6 h + 24 h case" },
-              { k: "Mic", v: "Beam-forming dual" },
+              { k: t("hw.b1k"), v: t("hw.b1v") },
+              { k: t("hw.b2k"), v: t("hw.b2v") },
+              { k: t("hw.b3k"), v: t("hw.b3v") },
+              { k: t("hw.b4k"), v: t("hw.b4v") },
+              { k: t("hw.b5k"), v: t("hw.b5v") },
             ]}
           />
         </div>
@@ -50,7 +51,7 @@ export function Hardware() {
   );
 }
 
-function ProductCard({ image, tag, title, specs }: { image: string; tag: string; title: string; specs: { k: string; v: string }[] }) {
+function ProductCard({ image, tag, title, gen, specs }: { image: string; tag: string; title: string; gen: string; specs: { k: string; v: string }[] }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -65,7 +66,7 @@ function ProductCard({ image, tag, title, specs }: { image: string; tag: string;
       <div className="p-7">
         <div className="flex items-center justify-between">
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-hud">{tag}</p>
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">Gen 01</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">{gen}</span>
         </div>
         <h3 className="mt-3 text-2xl font-semibold tracking-tight">{title}</h3>
 
