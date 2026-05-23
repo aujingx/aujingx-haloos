@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { LocaleProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -77,6 +76,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#0A0A0B" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { title: "Lovable App" },
+      { property: "og:title", content: "Lovable App" },
+      { name: "twitter:title", content: "Lovable App" },
+      { name: "description", content: "Halo OS demo" },
+      { property: "og:description", content: "Halo OS demo" },
+      { name: "twitter:description", content: "Halo OS demo" },
     ],
     links: [
       {
@@ -110,9 +115,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LocaleProvider>
-        <Outlet />
-      </LocaleProvider>
+      <Outlet />
     </QueryClientProvider>
   );
 }
