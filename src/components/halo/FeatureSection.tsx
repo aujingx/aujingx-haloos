@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { AIStatusOrb, type OrbState } from "./AIStatusOrb";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   id: string;
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export function FeatureSection({ id, eyebrow, title, body, image, imageAlt, reverse, orb = "listening", bullets }: Props) {
+  const { t } = useT();
   return (
     <section id={id} className="relative py-32">
       <div className={`mx-auto grid max-w-6xl items-center gap-12 px-6 md:grid-cols-2 ${reverse ? "md:[&>div:first-child]:order-2" : ""}`}>
@@ -32,7 +34,7 @@ export function FeatureSection({ id, eyebrow, title, body, image, imageAlt, reve
             </div>
           </div>
           <div className="absolute bottom-5 right-5 flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-hud">Live · HUD</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-hud">{t("demo.fov").replace(/^FOV\s*/i, "").replace(/^视场\s*/, "")}</span>
             <span className="h-1.5 w-1.5 rounded-full bg-hud" style={{ boxShadow: "0 0 8px var(--hud)" }} />
           </div>
         </motion.div>

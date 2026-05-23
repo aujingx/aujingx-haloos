@@ -1,15 +1,10 @@
 import { motion } from "framer-motion";
+import { useT } from "@/lib/i18n";
 
 export type OrbState = "idle" | "listening" | "thinking" | "acting";
 
-const labels: Record<OrbState, string> = {
-  idle: "待机",
-  listening: "在听",
-  thinking: "理解中",
-  acting: "执行中",
-};
-
 export function AIStatusOrb({ state = "idle", className = "" }: { state?: OrbState; className?: string }) {
+  const { t } = useT();
   const color =
     state === "listening" ? "var(--hud)" :
     state === "thinking" ? "var(--ember)" :
@@ -39,8 +34,8 @@ export function AIStatusOrb({ state = "idle", className = "" }: { state?: OrbSta
         />
       </div>
       <div className="flex flex-col leading-tight">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">Halo</span>
-        <span className="font-mono text-xs text-ink">{labels[state]}</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">{t("orb.brand")}</span>
+        <span className="font-mono text-xs text-ink">{t(`orb.${state}`)}</span>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { LocaleProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -109,7 +110,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <LocaleProvider>
+        <Outlet />
+      </LocaleProvider>
     </QueryClientProvider>
   );
 }

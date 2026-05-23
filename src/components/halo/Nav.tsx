@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 
 export function Nav() {
+  const { t, locale, setLocale } = useT();
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="glass mx-auto mt-4 flex max-w-6xl items-center justify-between rounded-full px-5 py-2.5">
@@ -9,18 +11,27 @@ export function Nav() {
           <span className="font-display text-sm font-semibold tracking-wide">HALO OS</span>
         </Link>
         <nav className="hidden items-center gap-7 text-xs uppercase tracking-[0.18em] text-ink-dim md:flex">
-          <a href="#listens" className="transition hover:text-ink">Listens</a>
-          <a href="#sees" className="transition hover:text-ink">Sees</a>
-          <a href="#acts" className="transition hover:text-ink">Acts</a>
-          <a href="#demo" className="transition hover:text-ink">Demo</a>
-          <a href="#hardware" className="transition hover:text-ink">Hardware</a>
+          <a href="#listens" className="transition hover:text-ink">{t("nav.listens")}</a>
+          <a href="#sees" className="transition hover:text-ink">{t("nav.sees")}</a>
+          <a href="#acts" className="transition hover:text-ink">{t("nav.acts")}</a>
+          <a href="#demo" className="transition hover:text-ink">{t("nav.demo")}</a>
+          <a href="#hardware" className="transition hover:text-ink">{t("nav.hardware")}</a>
         </nav>
-        <Link
-          to="/demo"
-          className="rounded-full bg-ember px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-bg transition hover:brightness-110"
-        >
-          Try Demo
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
+            className="rounded-full border border-line px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim transition hover:text-ink"
+            aria-label="Toggle language"
+          >
+            {t("nav.langToggle")}
+          </button>
+          <Link
+            to="/demo"
+            className="rounded-full bg-ember px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-bg transition hover:brightness-110"
+          >
+            {t("nav.tryDemo")}
+          </Link>
+        </div>
       </div>
     </header>
   );

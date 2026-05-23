@@ -12,14 +12,15 @@ import { Footer } from "@/components/halo/Footer";
 import lifestyleImg from "@/assets/lifestyle-listen.jpg";
 import messageImg from "@/assets/scene-message.jpg";
 import navigateImg from "@/assets/scene-navigate.jpg";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Halo OS — The Ambient Operating System for Smart Glasses" },
-      { name: "description", content: "Halo OS is a tap-free, AI-native operating system designed for smart glasses and wireless audio. Speak, glance, gesture — the world stays in view." },
-      { property: "og:title", content: "Halo OS — No tap. Just look." },
-      { property: "og:description", content: "An ambient operating system for smart glasses and wireless audio. Speak, glance, gesture." },
+      { title: "Halo OS — 为智能眼镜打造的环境式操作系统" },
+      { name: "description", content: "Halo OS 是一套无需点按、为智能眼镜与无线音频原生设计的 AI 操作系统。说一句、看一眼、做个手势，世界仍在眼前。" },
+      { property: "og:title", content: "Halo OS — 无需点按，只需一眼。" },
+      { property: "og:description", content: "一套为智能眼镜与无线音频打造的环境式操作系统。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { t } = useT();
   return (
     <main className="relative">
       <Nav />
@@ -36,50 +38,50 @@ function Index() {
 
       <FeatureSection
         id="listens"
-        eyebrow="01 · It Listens"
-        title="The mic is open. The world is still there."
-        body="Say a sentence and Halo picks up where your attention left off. On-device speech, beam-formed by your earbuds, parsed by an edge model — no wake word, no awkward pause."
+        eyebrow={t("f.listens.eyebrow")}
+        title={t("f.listens.title")}
+        body={t("f.listens.body")}
         image={lifestyleImg}
-        imageAlt="Person wearing Halo Frames on a city street at sunset"
+        imageAlt={t("f.listens.alt")}
         orb="listening"
         bullets={[
-          { k: "Wake to render", v: "110 ms" },
-          { k: "Recognition", v: "On-device · 28 languages" },
-          { k: "Confirmation", v: "Soft tone + cyan dot" },
-          { k: "Privacy LED", v: "Always on when capturing" },
+          { k: t("f.listens.b1k"), v: t("f.listens.b1v") },
+          { k: t("f.listens.b2k"), v: t("f.listens.b2v") },
+          { k: t("f.listens.b3k"), v: t("f.listens.b3v") },
+          { k: t("f.listens.b4k"), v: t("f.listens.b4v") },
         ]}
       />
 
       <FeatureSection
         id="sees"
-        eyebrow="02 · It Sees"
-        title="Your gaze is the cursor. Your dwell is the click."
-        body="Look at a card for 800 ms and it expands. Look away and it dissolves. There is no pointer, no menu — only attention and intent, the two things you were already paying."
+        eyebrow={t("f.sees.eyebrow")}
+        title={t("f.sees.title")}
+        body={t("f.sees.body")}
         image={messageImg}
-        imageAlt="Halo HUD message bubble overlaid in cafe scene"
+        imageAlt={t("f.sees.alt")}
         orb="thinking"
         reverse
         bullets={[
-          { k: "Tracking", v: "Foveated · 240 Hz" },
-          { k: "Dwell select", v: "800 ms · adjustable" },
-          { k: "Confirm gesture", v: "Subtle thumb tap" },
-          { k: "Reading mode", v: "Auto-pause on text" },
+          { k: t("f.sees.b1k"), v: t("f.sees.b1v") },
+          { k: t("f.sees.b2k"), v: t("f.sees.b2v") },
+          { k: t("f.sees.b3k"), v: t("f.sees.b3v") },
+          { k: t("f.sees.b4k"), v: t("f.sees.b4v") },
         ]}
       />
 
       <FeatureSection
         id="acts"
-        eyebrow="03 · It Acts"
-        title="One sentence. The system does the rest."
-        body='"Move my 2pm to Thursday, tell the team, and book Aurora." Halo composes the intent across calendar, chat, and rooms — and shows you a quiet receipt floating at the edge of view.'
+        eyebrow={t("f.acts.eyebrow")}
+        title={t("f.acts.title")}
+        body={t("f.acts.body")}
         image={navigateImg}
-        imageAlt="Cyclist POV with Halo navigation overlay in park"
+        imageAlt={t("f.acts.alt")}
         orb="acting"
         bullets={[
-          { k: "Multi-app intent", v: "Native action graph" },
-          { k: "Undo window", v: "10 s glance-revert" },
-          { k: "Receipts", v: "Fade after 4 s" },
-          { k: "Offline", v: "Core actions on-device" },
+          { k: t("f.acts.b1k"), v: t("f.acts.b1v") },
+          { k: t("f.acts.b2k"), v: t("f.acts.b2v") },
+          { k: t("f.acts.b3k"), v: t("f.acts.b3v") },
+          { k: t("f.acts.b4k"), v: t("f.acts.b4v") },
         ]}
       />
 

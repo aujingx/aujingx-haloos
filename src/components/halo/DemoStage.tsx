@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AIStatusOrb, type OrbState } from "./AIStatusOrb";
+import { useT } from "@/lib/i18n";
 
 type SceneId = "schedule" | "message" | "navigate";
 
-const scenes: { id: SceneId; label: string; caption: string }[] = [
-  { id: "schedule", label: "Schedule", caption: "Glance to expand. Swipe to commit." },
-  { id: "message", label: "Message", caption: "Notifications breathe. Voice replies." },
-  { id: "navigate", label: "Navigate", caption: "Turn your head. Labels travel with you." },
-];
-
 export function DemoStage() {
+  const { t } = useT();
   const [scene, setScene] = useState<SceneId>("schedule");
   const [orb, setOrb] = useState<OrbState>("idle");
   const stageRef = useRef<HTMLDivElement>(null);
   const [gaze, setGaze] = useState<{ x: number; y: number } | null>(null);
+
+  const scenes: { id: SceneId; label: string; caption: string }[] = [
+    { id: "schedule", label: t("demo.scene.schedule"), caption: t("demo.scene.schedule.cap") },
+    { id: "message", label: t("demo.scene.message"), caption: t("demo.scene.message.cap") },
+    { id: "navigate", label: t("demo.scene.navigate"), caption: t("demo.scene.navigate.cap") },
+  ];
 
   useEffect(() => {
     const el = stageRef.current;
@@ -37,37 +39,31 @@ export function DemoStage() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-10 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-hud">Live Demo · 03 Acts</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-hud">{t("demo.eyebrow")}</p>
             <h2 className="mt-3 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-              See the interface<br />you don't touch.
+              {t("demo.title1")}<br />{t("demo.title2")}
             </h2>
           </div>
-          <p className="max-w-sm text-sm text-ink-dim">
-            Hover your gaze (cursor) on a card to dwell-select.
-            Halo responds in 800 ms — same as a glance.
-          </p>
+          <p className="max-w-sm text-sm text-ink-dim">{t("demo.hint")}</p>
         </div>
 
         <div
           ref={stageRef}
           className="relative aspect-[16/9] w-full overflow-hidden rounded-[28px] border border-line bg-bg-soft"
         >
-          {/* Grid backdrop */}
           <div className="absolute inset-0 grid-bg opacity-40" />
           <div className="absolute inset-0 scanline opacity-30" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-ember/10 via-transparent to-hud/15" />
 
-          {/* Top HUD bar */}
           <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-6 py-4">
             <AIStatusOrb state={orb} />
             <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim">
               <span>Halo OS · v0.1</span>
               <span className="h-1 w-1 rounded-full bg-hud" />
-              <span>FOV 110°</span>
+              <span>{t("demo.fov")}</span>
             </div>
           </div>
 
-          {/* Scene */}
           <AnimatePresence mode="wait">
             <motion.div
               key={scene}
@@ -83,7 +79,6 @@ export function DemoStage() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Gaze cursor */}
           {gaze && (
             <div
               className="pointer-events-none absolute z-20"
@@ -97,7 +92,6 @@ export function DemoStage() {
             </div>
           )}
 
-          {/* Progress / scene picker */}
           <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-4 px-6 py-4">
             <div className="flex gap-2">
               {scenes.map((s) => (
@@ -127,15 +121,16 @@ export function DemoStage() {
 
 /* ---------------- Schedule ---------------- */
 function SceneSchedule({ onActivity }: { onActivity: (s: OrbState) => void }) {
+  const { t } = useT();
   const [dwell, setDwell] = useState<number | null>(null);
   const [completed, setCompleted] = useState<number[]>([]);
   const [expanded, setExpanded] = useState<number | null>(null);
   const timerRef = useRef<number | null>(null);
 
   const tasks = [
-    { t: "09:30", title: "Stand-up · Engineering", place: "Halo Studio" },
-    { t: "11:00", title: "Coffee with Mira", place: "Blue Bottle" },
-    { t: "14:00", title: "Design review · Frames v3", place: "Room Aurora" },
+    { t: "09:30", title: t("sch.task1"), place: t("sch.task1p") },
+    { t: "11:00", title: t("sch.task2"), place: t("sch.task2p") },
+    { t: "14:00", title: t("sch.task3"), place: t("sch.task3p") },
   ];
 
   const onEnter = (i: number) => {
@@ -161,7 +156,7 @@ function SceneSchedule({ onActivity }: { onActivity: (s: OrbState) => void }) {
     <div className="absolute inset-0 grid place-items-center px-12">
       <div className="w-full max-w-xl">
         <p className="mb-4 text-center font-mono text-[10px] uppercase tracking-[0.35em] text-hud">
-          Tuesday · Morning
+          {t("sch.morning")}
         </p>
         <div className="space-y-3">
           {tasks.map((task, i) => {
@@ -201,13 +196,13 @@ function SceneSchedule({ onActivity }: { onActivity: (s: OrbState) => void }) {
                     >
                       <div className="flex items-center justify-between gap-4 px-5 py-3">
                         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">
-                          Swipe right → mark done
+                          {t("sch.swipeHint")}
                         </p>
                         <button
                           onClick={() => complete(i)}
                           className="rounded-full bg-hud px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-bg transition hover:brightness-110"
                         >
-                          Gesture: Swipe →
+                          {t("sch.swipeBtn")}
                         </button>
                       </div>
                     </motion.div>
@@ -224,6 +219,7 @@ function SceneSchedule({ onActivity }: { onActivity: (s: OrbState) => void }) {
 
 /* ---------------- Message ---------------- */
 function SceneMessage({ onActivity }: { onActivity: (s: OrbState) => void }) {
+  const { t } = useT();
   const [opened, setOpened] = useState(false);
   const [reply, setReply] = useState(false);
 
@@ -237,7 +233,7 @@ function SceneMessage({ onActivity }: { onActivity: (s: OrbState) => void }) {
           transition={{ duration: 1.6, repeat: Infinity }}
         >
           <span className="h-2 w-2 rounded-full bg-hud" style={{ boxShadow: "0 0 12px var(--hud)" }} />
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em]">Mira · just now</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em]">{t("msg.who")}</span>
         </motion.button>
       )}
 
@@ -252,34 +248,30 @@ function SceneMessage({ onActivity }: { onActivity: (s: OrbState) => void }) {
             <div className="grid w-full max-w-4xl grid-cols-3 gap-4">
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
                 className="rounded-2xl border border-line bg-bg/60 p-5 backdrop-blur">
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">Mira</p>
-                <p className="mt-3 text-sm leading-relaxed">
-                  Coffee at 11 still good? I'm grabbing a corner table.
-                </p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">{t("msg.from")}</p>
+                <p className="mt-3 text-sm leading-relaxed">{t("msg.body")}</p>
                 <p className="mt-4 font-mono text-[10px] text-ink-dim">10:42</p>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
                 className="grid place-items-center rounded-2xl border border-hud/40 bg-bg/40 p-5 backdrop-blur hud-ring">
                 <p className="text-center font-mono text-[10px] uppercase tracking-[0.25em] text-hud">
-                  Look + Speak
+                  {t("msg.lookSpeak")}
                 </p>
-                <p className="mt-3 text-center text-sm text-ink-dim">
-                  "On my way, two minutes."
-                </p>
+                <p className="mt-3 text-center text-sm text-ink-dim">{t("msg.reply")}</p>
                 <button
                   onClick={() => { onActivity("acting"); setReply(true); setTimeout(() => onActivity("idle"), 1200); }}
                   className="mt-4 rounded-full bg-ember px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-bg"
                 >
-                  Voice reply
+                  {t("msg.voice")}
                 </button>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
                 className="space-y-2 rounded-2xl border border-line bg-bg/60 p-5 backdrop-blur">
-                <button className="block w-full rounded-lg border border-line px-3 py-2 text-left text-xs text-ink-dim transition hover:text-ink">Dismiss</button>
-                <button className="block w-full rounded-lg border border-line px-3 py-2 text-left text-xs text-ink-dim transition hover:text-ink">Mute Mira · 1h</button>
-                <button className="block w-full rounded-lg border border-line px-3 py-2 text-left text-xs text-ink-dim transition hover:text-ink">Share location</button>
+                <button className="block w-full rounded-lg border border-line px-3 py-2 text-left text-xs text-ink-dim transition hover:text-ink">{t("msg.dismiss")}</button>
+                <button className="block w-full rounded-lg border border-line px-3 py-2 text-left text-xs text-ink-dim transition hover:text-ink">{t("msg.mute")}</button>
+                <button className="block w-full rounded-lg border border-line px-3 py-2 text-left text-xs text-ink-dim transition hover:text-ink">{t("msg.share")}</button>
               </motion.div>
             </div>
 
@@ -291,7 +283,7 @@ function SceneMessage({ onActivity }: { onActivity: (s: OrbState) => void }) {
                   exit={{ opacity: 0 }}
                   className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-full border border-hud/40 bg-bg/80 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.25em] text-hud"
                 >
-                  Sent · "On my way, two minutes."
+                  {t("msg.sent")}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -304,15 +296,16 @@ function SceneMessage({ onActivity }: { onActivity: (s: OrbState) => void }) {
 
 /* ---------------- Navigate ---------------- */
 function SceneNavigate({ onActivity }: { onActivity: (s: OrbState) => void }) {
-  const [heading, setHeading] = useState(0); // -180..180
+  const { t } = useT();
+  const [heading, setHeading] = useState(0);
   const dragging = useRef(false);
   const startX = useRef(0);
   const startH = useRef(0);
 
   const pois = [
-    { name: "Blue Bottle Coffee", dist: "120 m", at: -40 },
-    { name: "Halo Studio", dist: "480 m", at: 10 },
-    { name: "Aurora Park", dist: "1.2 km", at: 80 },
+    { name: t("nav.poi1"), dist: "120 m", at: -40 },
+    { name: t("nav.poi2"), dist: "480 m", at: 10 },
+    { name: t("nav.poi3"), dist: "1.2 km", at: 80 },
   ];
 
   return (
@@ -333,7 +326,6 @@ function SceneNavigate({ onActivity }: { onActivity: (s: OrbState) => void }) {
         <div className="absolute inset-0 bg-bg/30" />
       </motion.div>
 
-      {/* POI labels */}
       {pois.map((p) => {
         const dx = (p.at - heading) * 6;
         const visible = Math.abs(p.at - heading) < 60;
@@ -352,17 +344,16 @@ function SceneNavigate({ onActivity }: { onActivity: (s: OrbState) => void }) {
         );
       })}
 
-      {/* Compass */}
       <div className="absolute left-1/2 top-6 -translate-x-1/2">
         <div className="flex items-center gap-4 rounded-full border border-line bg-bg/60 px-4 py-1.5 backdrop-blur">
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim">Heading</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim">{t("nav.heading")}</span>
           <span className="font-mono text-xs text-hud">{heading >= 0 ? "+" : ""}{Math.round(heading)}°</span>
         </div>
       </div>
 
       <div className="absolute inset-x-0 bottom-16 text-center">
         <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-dim">
-          Drag to turn your head
+          {t("nav.dragHint")}
         </p>
       </div>
     </div>
