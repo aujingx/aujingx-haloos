@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 export type OrbState = "idle" | "listening" | "thinking" | "acting";
 
 const labels: Record<OrbState, string> = {
-  idle: "Standing by",
-  listening: "Listening",
-  thinking: "Understanding",
-  acting: "Acting",
+  idle: "待机",
+  listening: "在听",
+  thinking: "理解中",
+  acting: "执行中",
 };
 
 export function AIStatusOrb({ state = "idle", className = "" }: { state?: OrbState; className?: string }) {
