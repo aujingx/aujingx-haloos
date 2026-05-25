@@ -95,7 +95,7 @@ export function SceneAction() {
   return (
     <div className="flex min-h-[520px] flex-col lg:flex-row">
       {/* Left: user controls + robot POV */}
-      <div className="relative min-h-[460px] overflow-hidden border-b border-line bg-bg lg:border-b-0">
+      <div className="relative min-h-[460px] w-full overflow-hidden border-b border-line bg-bg lg:w-3/5 lg:border-b-0">
         <img src={robotPov} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-80" width={1536} height={896} />
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-transparent" />
 
@@ -156,7 +156,7 @@ export function SceneAction() {
       </div>
 
       {/* Right: narration */}
-      <div className="flex flex-col gap-4 border-t border-line bg-bg-soft/30 p-6 lg:border-l lg:border-t-0 lg:p-8">
+      <div className="flex w-full flex-col gap-4 border-t border-line bg-bg-soft/30 p-6 lg:w-2/5 lg:border-l lg:border-t-0 lg:p-8">
         <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-hud">{t("demo.right")}</p>
 
         <AnimatePresence>

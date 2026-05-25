@@ -47,7 +47,7 @@ export function SceneMultiAgent() {
   return (
     <div className="flex min-h-[520px] flex-col lg:flex-row">
       {/* Left: topology + tasks */}
-      <div className="relative min-h-[460px] overflow-hidden border-b border-line bg-bg-soft/20 p-6 lg:border-b-0 lg:p-8">
+      <div className="relative min-h-[460px] w-full overflow-hidden border-b border-line bg-bg-soft/20 p-6 lg:w-3/5 lg:border-b-0 lg:p-8">
         <div className="absolute left-4 top-4 z-10">
           <AIStatusOrb state={orb} />
         </div>
@@ -100,7 +100,7 @@ export function SceneMultiAgent() {
       </div>
 
       {/* Right: aggregator (glasses) */}
-      <div className="flex flex-col gap-4 border-t border-line bg-bg-soft/30 p-6 lg:border-l lg:border-t-0 lg:p-8">
+      <div className="flex w-full flex-col gap-4 border-t border-line bg-bg-soft/30 p-6 lg:w-2/5 lg:border-l lg:border-t-0 lg:p-8">
         <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-hud">{t("demo.right")} · {t("s5.glasses")}</p>
         <AnimatePresence>
           {lowBattery && (

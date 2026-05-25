@@ -68,7 +68,7 @@ export function ScenePresence() {
       {/* Left: gaze view */}
       <div
         ref={ref}
-        className="relative h-[460px] cursor-none overflow-hidden bg-bg-soft lg:h-auto"
+        className="relative h-[460px] w-full cursor-none overflow-hidden bg-bg-soft lg:h-auto lg:w-3/5"
       >
         <img src={homeScene} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" width={1536} height={896} />
         <div className="absolute inset-0 bg-bg/40" />
@@ -124,7 +124,7 @@ export function ScenePresence() {
       </div>
 
       {/* Right: explanation */}
-      <div className="flex flex-col justify-between gap-6 border-t border-line bg-bg-soft/30 p-6 lg:border-l lg:border-t-0 lg:p-8">
+      <div className="flex w-full flex-col justify-between gap-6 border-t border-line bg-bg-soft/30 p-6 lg:w-2/5 lg:border-l lg:border-t-0 lg:p-8">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-hud">{t("demo.right")}</p>
           <h3 className="mt-3 text-2xl font-semibold">{focused ? t("s1.listening") : t("s1.idle")}</h3>
