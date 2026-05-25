@@ -93,7 +93,7 @@ export function SceneAction() {
     "idle";
 
   return (
-    <div className="grid min-h-[520px] grid-cols-1 lg:grid-cols-5">
+    <div className="flex min-h-[520px] flex-col lg:flex-row">
       {/* Left: user controls + robot POV */}
       <div className="relative min-h-[460px] overflow-hidden border-b border-line bg-bg lg:border-b-0">
         <img src={robotPov} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-80" width={1536} height={896} />

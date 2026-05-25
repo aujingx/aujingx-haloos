@@ -45,7 +45,7 @@ export function SceneMultiAgent() {
   const orb: OrbState = t0 == null ? "idle" : elapsed < 5500 ? "acting" : "handoff";
 
   return (
-    <div className="grid min-h-[520px] grid-cols-1 lg:grid-cols-5">
+    <div className="flex min-h-[520px] flex-col lg:flex-row">
       {/* Left: topology + tasks */}
       <div className="relative min-h-[460px] overflow-hidden border-b border-line bg-bg-soft/20 p-6 lg:border-b-0 lg:p-8">
         <div className="absolute left-4 top-4 z-10">

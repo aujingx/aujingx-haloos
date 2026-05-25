@@ -64,7 +64,7 @@ export function ScenePresence() {
   const orbState: OrbState = focused ? "listening" : "idle";
 
   return (
-    <div className="grid min-h-[520px] grid-cols-1 lg:grid-cols-5">
+    <div className="flex min-h-[520px] flex-col lg:flex-row">
       {/* Left: gaze view */}
       <div
         ref={ref}
