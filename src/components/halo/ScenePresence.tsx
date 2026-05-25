@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useT } from "@/lib/i18n";
 import { AIStatusOrb, type OrbState } from "./AIStatusOrb";
+import homeScene from "@/assets/home-scene.jpg";
 
 type ObjId = "cup" | "window" | "robot";
 const objects: { id: ObjId; left: string; top: string; size: number }[] = [
@@ -68,12 +69,8 @@ export function ScenePresence() {
       <div
         ref={ref}
         className="relative h-[460px] cursor-none overflow-hidden bg-bg-soft lg:h-auto"
-        style={{
-          backgroundImage: `url(${new URL("../../assets/home-scene.jpg", import.meta.url).href})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
       >
+        <img src={homeScene} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" width={1536} height={896} />
         <div className="absolute inset-0 bg-bg/40" />
         {/* corner glow that pulses always */}
         <motion.div

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useT } from "@/lib/i18n";
 import { AIStatusOrb } from "./AIStatusOrb";
+import homeScene from "@/assets/home-scene.jpg";
 
 type EventId = "boil" | "msg" | "pkg" | "filtered";
 
@@ -54,14 +55,7 @@ export function SceneEmergence() {
     <div className="grid h-full grid-cols-1 lg:grid-cols-[1.3fr_1fr]">
       {/* Left: glasses HUD view */}
       <div className="relative min-h-[460px] overflow-hidden border-b border-line bg-bg lg:border-b-0">
-        <div
-          className="absolute inset-0 opacity-50"
-          style={{
-            backgroundImage: `url(${new URL("../../assets/home-scene.jpg", import.meta.url).href})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
+        <img src={homeScene} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-50" width={1536} height={896} />
         {/* warm tint over kitchen direction */}
         <AnimatePresence>
           {active.boil && (

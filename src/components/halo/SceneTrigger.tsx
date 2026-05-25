@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useT } from "@/lib/i18n";
 import { AIStatusOrb, type OrbState } from "./AIStatusOrb";
+import homeScene from "@/assets/home-scene.jpg";
 
 type Mode = "say" | "hint" | "idle";
 
@@ -23,14 +24,7 @@ export function SceneTrigger() {
     <div className="grid h-full grid-cols-1 lg:grid-cols-[1.2fr_1fr]">
       {/* Left: user side */}
       <div className="relative min-h-[460px] overflow-hidden border-b border-line bg-bg-soft/20 lg:border-b-0">
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage: `url(${new URL("../../assets/home-scene.jpg", import.meta.url).href})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
+        <img src={homeScene} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-40" width={1536} height={896} />
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
 
         <div className="absolute left-4 top-4">

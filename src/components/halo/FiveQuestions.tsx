@@ -27,8 +27,7 @@ export function FiveQuestions() {
               key={id}
               href={`#${anchors[id]}`}
               initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05, duration: 0.5 }}
               className="group relative flex flex-col rounded-2xl border border-line bg-bg-soft/40 p-5 backdrop-blur transition hover:border-hud/40"
             >
