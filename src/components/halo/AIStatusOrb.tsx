@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useT } from "@/lib/i18n";
 
-export type OrbState = "idle" | "listening" | "thinking" | "acting";
+export type OrbState = "idle" | "listening" | "thinking" | "acting" | "handoff" | "waiting";
 
 export function AIStatusOrb({ state = "idle", className = "" }: { state?: OrbState; className?: string }) {
   const { t } = useT();
@@ -9,6 +9,8 @@ export function AIStatusOrb({ state = "idle", className = "" }: { state?: OrbSta
     state === "listening" ? "var(--hud)" :
     state === "thinking" ? "var(--ember)" :
     state === "acting" ? "var(--hud)" :
+    state === "handoff" ? "var(--ember)" :
+    state === "waiting" ? "var(--ink-dim)" :
     "var(--ink-dim)";
 
   return (
