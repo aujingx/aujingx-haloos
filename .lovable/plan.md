@@ -1,75 +1,82 @@
-## 概念
 
-**Halo OS** — 一套无需点按、为智能眼镜 + 蓝牙耳机打造的 AI 操作系统。官网用产品发布会的叙事节奏介绍它："看一眼，它就懂；说一句，它就做。"
+## 〇、先修 bug
+`src/routes/__root.tsx` 的 `RootComponent` 用 `LocaleProvider` 包住 `<Outlet />`，否则 `/` 报 `useT must be used within LocaleProvider`。
 
-视觉融合：
-- **Meta Ray-Ban 的生活感**：真实佩戴场景、明亮户外摄影、人物视角、暖色调
-- **Xreal/Rokid 的未来感**：HUD 信息层、霓虹光晕、视点追踪可视化、深色科技段落
+## 一、页面结构
+```
+Nav
+Hero
+FiveQuestions   锚点条，五张卡
+★ DemoStage    五幕
+Footer
+```
+不做 Trade-offs 网页。砍掉旧 Manifesto / TechSpecs / Hardware / CTA / Surfaces / FeatureSection / AmbientStates。`/demo` 路由保留。
 
-整体节奏：明（生活场景）→ 暗（系统能力）→ 明（CTA），形成呼吸感。
+## 二、五幕 Demo
+统一布局：左 = 人这端看到的，右 = Agent 这端在做的（自然语言旁白流），底 = 一句这一幕回答了什么。底部 scene picker：在场 · 唤起 · 浮现 · 执行 · 协同。
 
----
+### 幕一 · 在场
+鼠标在场景里 = 视线方向。视野角落微光、被看物体的极淡描边、机器人胸口光环三处同步呼吸；对物体多看 1 秒 → 三处同时收紧，进入 listening。  
+答：它不是图标，是空间里一直亮着的注意力。
 
-## 页面结构（单页长滚动 + 内嵌 demo）
+### 幕二 · 唤起
+顶部切换："我在 ① 明说 / ② 有点意思 / ③ 发呆"。
+- ① 说"我有点冷" → Agent 关窗，旁白"好，我去关窗。"
+- ② 裹紧衣服+扫了眼窗 → 视野下沿浮一行"要关窗吗？"，3 秒自动消失，不理无后果。
+- ③ 什么都没做 → Agent 也不做；除非日程里写着"客人 10 分钟后到"，才默默把暖气 +1°C，左下一行可撤销提示。
+
+答：不确定时选最不打扰你的那一档，发呆不会被误触发。
+
+### 幕三 · 浮现
+30 秒时间线只有 3 条信息，分三种呈现：
+1. 水快烧开 → 眼镜把炉灶方向染暖色 + 一声 1 秒短响，无文字。
+2. 朋友消息 → 视野下沿浮一行 3 秒小字"小米：晚上还约吗？"，不理就收走。
+3. 快递到了 → Agent 直接代办，UI 只留"已请前台代收，3 秒撤销"。
+
+中间穿插一条被静音的 App 商城促销，侧边一个灰条"已为你过滤 1 条"，可点开。  
+答：按"该不该打扰你"分环境化 / 轻触 / 代办三层；同一时刻最多一条上前。
+
+### 幕四 · 理解与执行
+按住麦克风按钮（旁注 `(真实环境：直接说话)`）说"帮我把桌上那杯水递过来"。  
+右侧机器人第一视角，自然语言旁白逐行浮现：
 
 ```
-/  (src/routes/index.tsx)
- ├─ Nav            固定顶栏，半透明毛玻璃
- ├─ Hero           暗场 + 眼镜佩戴第一视角，标语 "No tap. Just look."
- ├─ Manifesto      三行大字宣言，慢速淡入
- ├─ Section 1      "It listens."   ─── 语音对话场景 + AI 状态点演示
- ├─ Section 2      "It sees."      ─── 视点追踪 demo（鼠标=视线，悬停 0.8s 触发）
- ├─ Section 3      "It acts."      ─── 手势/对话执行任务，HUD 卡片浮现
- ├─ Demo 区块      全宽嵌入三幕交互（日程 / 消息 / 导航），底部进度条
- ├─ Hardware       眼镜 + 耳机产品图，规格表（Ray-Ban 风）
- ├─ Ambient AI     "AI 在听 / 懂了 / 在执行" 状态语言展示
- ├─ Tech Specs     深色段，霓虹分隔线（Xreal 风）
- ├─ CTA            "Pre-order Halo" + 邮件订阅
- └─ Footer         极简
+看到你在沙发上。
+桌上有一杯水，应该就是这个。
+我先过去，绕开茶几。
 ```
 
-`/demo` 也建一个独立路由，承载放大版交互 demo，便于直接分享。
+地图层一条路径线，机器人沿线推进。中途你换姿势，旁白追加：
 
----
+```
+~~先从右边绕过来~~  你换姿势了，我从左边过来。
+```
 
-## 三幕交互 demo（保留并升级现有方案）
+任何时候可打断：
+- 点机器人画面 `(真实环境：举手)` → 立即停 + 旁白"我停下了，要换个方式？"
+- 按麦克风说"停" `(真实环境：直接说"停")` → 同上。
 
-| 幕 | 场景 | 交互 |
-|---|---|---|
-| 日程 | 早晨语音卡片浮现 | 视点悬停展开 → 右滑（手势）完成 |
-| 消息 | 视野角落呼吸光点 | 靠近 → 三列环绕展开 → 选"语音回复" |
-| 导航 | 街景全景 | 左右拖拽=转头，POI 标签视差，"信息用完即散" |
+答：它的判断写成人话给你看，可随时叫停、随时改主意。
 
-右上角 AI 状态点：待机 / 在听 / 理解中 / 执行中（四态光晕动画）。
+### 幕五 · 协同
+你说"我十分钟后要出门开会"。  
+轻量拓扑图：眼镜 / 家居 / 车 三节点并行：
+- 家居：关灯、空调离家模式。
+- 车：预热、规划路线。
+- 眼镜：抓会议材料到视野角落，提醒带钥匙。
 
----
+每个节点自然语言写自己在做什么。车检测到电量低 → 把状态汇报给眼镜 → 只有眼镜统一告诉你一行。  
+答：不是多个 App 协作，是一个 Agent 借多个身体；只在一个地方汇报。
 
-## 视觉系统
+## 三、技术实现
+- **修 bug**（首要）：`src/routes/__root.tsx` 包 `LocaleProvider`。
+- 新文件：`FiveQuestions.tsx`、`ScenePresence.tsx`、`SceneTrigger.tsx`（含 ①②③ 切换）、`SceneEmergence.tsx`、`SceneAction.tsx`、`SceneMultiAgent.tsx`、共用 `NarrationStream.tsx`（逐行旁白 + strike-through 改写）。
+- 改造：`DemoStage.tsx`（五幕调度）、`AIStatusOrb.tsx`（增 handoff / waiting-for-you）、`Hero.tsx`（新标语、新背景）、`i18n.tsx`（五幕中英全补，中文用口语）、`routes/index.tsx`（只留 Nav / Hero / FiveQuestions / DemoStage / Footer）。
+- 资源：imagegen 三张——人在沙发+远处机器人端杯子、机器人第一视角（识别描边风格）、客厅俯视图（路径层底图）。
+- 不动：styles.css token、Nav、Footer、framer-motion、字体、`/demo` 路由。
 
-- **配色**：主体 `#0A0A0B` 深黑 + `#F5F1EA` 暖米；点缀 `#FF5A1F` 焰橙（Ray-Ban 标志色）和 `#7CF9FF` 冷青 HUD 光（Xreal 风）
-- **字体**：标题 Sora（科技几何）；正文 Inter；小标签等宽 JetBrains Mono
-- **动效**：Framer Motion + scroll-triggered；hero 视差、文字 mask reveal、HUD 元素从视点位置放射
-- **图像**：用 `imagegen` 生成 6–8 张关键图（佩戴场景、产品特写、HUD overlay、街景）
+## 四、不做
+不接真实后端 / 机器人；不做账号、配对、订阅；不做移动端深度适配；不替换视觉风格；**不做 Trade-offs 网页**。
 
----
-
-## 技术实现
-
-- 新增路由：`src/routes/index.tsx`（重写）、`src/routes/demo.tsx`
-- 组件：`Nav`, `Hero`, `Section`, `AIStatusOrb`, `DemoStage`, `SceneSchedule`, `SceneMessage`, `SceneNav`, `HUDOverlay`, `SpecTable`, `CTA`, `Footer`
-- 设计 token 全部写入 `src/styles.css`（oklch）
-- 安装：`framer-motion`
-- 每个路由独立 `head()` meta（SEO）
-- 生成图存于 `src/assets/`，作为 ES6 import
-
----
-
-## 不做的事
-
-- 不接入真实 AI / 后端（纯前端原型）
-- 不做账号、支付、订阅落库（CTA 仅展示）
-- 不做移动端深度适配（demo 主要面向桌面演示，但布局响应式不破）
-
----
-
-确认后我开始构建。产品名我先用 **Halo OS**，如果你想换（如 Lumen / Vista / Aura）告诉我。
+## 五、收尾
+实现完成后，在最后的聊天回复里给你一段简短说明：要解决什么问题 + 核心思路（不写进网页）。

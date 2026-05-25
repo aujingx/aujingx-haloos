@@ -10,12 +10,12 @@ export function Nav() {
           <span className="relative inline-block h-2.5 w-2.5 rounded-full bg-hud" style={{ animation: "orb-pulse 2.4s ease-in-out infinite" }} />
           <span className="font-display text-sm font-semibold tracking-wide">HALO OS</span>
         </Link>
-        <nav className="hidden items-center gap-7 text-xs uppercase tracking-[0.18em] text-ink-dim md:flex">
-          <a href="#listens" className="transition hover:text-ink">{t("nav.listens")}</a>
-          <a href="#sees" className="transition hover:text-ink">{t("nav.sees")}</a>
-          <a href="#acts" className="transition hover:text-ink">{t("nav.acts")}</a>
-          <a href="#demo" className="transition hover:text-ink">{t("nav.demo")}</a>
-          <a href="#hardware" className="transition hover:text-ink">{t("nav.hardware")}</a>
+        <nav className="hidden items-center gap-6 text-[11px] uppercase tracking-[0.18em] text-ink-dim md:flex">
+          <a href="#scene-presence" className="transition hover:text-ink">{t("nav.presence")}</a>
+          <a href="#scene-trigger" className="transition hover:text-ink">{t("nav.trigger")}</a>
+          <a href="#scene-emergence" className="transition hover:text-ink">{t("nav.emergence")}</a>
+          <a href="#scene-action" className="transition hover:text-ink">{t("nav.action")}</a>
+          <a href="#scene-multi" className="transition hover:text-ink">{t("nav.multi")}</a>
         </nav>
         <div className="flex items-center gap-2">
           <button
@@ -25,12 +25,12 @@ export function Nav() {
           >
             {t("nav.langToggle")}
           </button>
-          <Link
-            to="/demo"
+          <a
+            href="#demo"
             className="rounded-full bg-ember px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-bg transition hover:brightness-110"
           >
             {t("nav.tryDemo")}
-          </Link>
+          </a>
         </div>
       </div>
     </header>
