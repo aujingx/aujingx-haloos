@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { LocaleProvider } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
 
@@ -115,7 +116,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <LocaleProvider>
+        <Outlet />
+      </LocaleProvider>
     </QueryClientProvider>
   );
 }
