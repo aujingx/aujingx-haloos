@@ -21,7 +21,7 @@ export function SceneTrigger() {
   const orb: OrbState = mode === "say" ? "acting" : mode === "hint" ? "thinking" : "idle";
 
   return (
-    <div className="grid h-full grid-cols-1 lg:grid-cols-[1.2fr_1fr]">
+    <div className="grid min-h-[520px] grid-cols-1 lg:grid-cols-[1.2fr_1fr]">
       {/* Left: user side */}
       <div className="relative min-h-[460px] overflow-hidden border-b border-line bg-bg-soft/20 lg:border-b-0">
         <img src={homeScene} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-40" width={1536} height={896} />
