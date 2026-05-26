@@ -35,7 +35,7 @@ export function FiveQuestions() {
               <h3 className="mt-4 text-lg font-semibold">{t(`fq.${id}.t`)}</h3>
               <p className="mt-2 text-[13px] leading-relaxed text-ink-dim">{t(`fq.${id}.b`)}</p>
               <span className="mt-6 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim transition group-hover:text-hud">
-                ↓ {t("demo.answer")}
+                ↓
               </span>
             </motion.a>
           ))}
