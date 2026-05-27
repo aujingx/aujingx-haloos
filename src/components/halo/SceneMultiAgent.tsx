@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useT } from "@/lib/i18n";
 import { AIStatusOrb, type OrbState } from "./AIStatusOrb";
-import homeScene from "@/assets/home-scene.jpg";
+import { RoomStage, UserOnSofa } from "./RoomStage";
+import { AgentRobot, type RobotState } from "./AgentRobot";
 
 type NodeId = "glasses" | "home" | "car";
 
@@ -14,6 +15,9 @@ const steps: { node: NodeId; key: string; at: number; done: number }[] = [
   { node: "glasses", key: "s5.glasses2", at: 2900, done: 4200 },
   { node: "car", key: "s5.car2", at: 3500, done: 5400 },
 ];
+
+const ROBOT = { x: 420, y: 410 };
+const USER = { x: 210, y: 330 };
 
 export function SceneMultiAgent() {
   const { t } = useT();
@@ -41,11 +45,85 @@ export function SceneMultiAgent() {
   }, [t0, lowBattery]);
 
   const orb: OrbState = t0 == null ? "idle" : elapsed < 5500 ? "acting" : "handoff";
+  const robotState: RobotState = t0 == null ? "idle" : elapsed < 5500 ? "acting" : "handoff";
+
+  // Peer device positions (on stage, near robot)
+  const PHONE = { x: 130, y: 130 };
+  const CAR = { x: 680, y: 130 };
 
   return (
-    <div className="relative h-[560px] w-full overflow-hidden bg-bg">
-      <img src={homeScene} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-35" width={1536} height={896} />
-      <div className="absolute inset-0 bg-bg/55" />
+    <div className="relative h-[560px] w-full">
+      <RoomStage
+        svgOverlay={
+          <>
+            <UserOnSofa active={t0 != null} />
+            {/* Robot center-stage */}
+            <AgentRobot
+              x={ROBOT.x}
+              y={ROBOT.y}
+              state={robotState}
+              lookAt={lowBattery ? USER : null}
+              showSightLine={lowBattery}
+            />
+            {/* Connection lines to peer devices */}
+            {t0 != null && (
+              <>
+                <motion.line
+                  x1={ROBOT.x} y1={ROBOT.y - 30}
+                  x2={PHONE.x + 30} y2={PHONE.y + 25}
+                  stroke="color-mix(in oklab, var(--hud) 50%, transparent)"
+                  strokeWidth="1.2"
+                  strokeDasharray="3 4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0.4, 0.9, 0.4] }}
+                  transition={{ duration: 1.6, repeat: Infinity }}
+                />
+                <motion.line
+                  x1={ROBOT.x} y1={ROBOT.y - 30}
+                  x2={CAR.x - 30} y2={CAR.y + 25}
+                  stroke="color-mix(in oklab, var(--hud) 50%, transparent)"
+                  strokeWidth="1.2"
+                  strokeDasharray="3 4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0.4, 0.9, 0.4] }}
+                  transition={{ duration: 1.6, repeat: Infinity, delay: 0.3 }}
+                />
+              </>
+            )}
+            {/* Speech bubble from robot (one voice) */}
+            <AnimatePresence>
+              {lowBattery && (
+                <motion.g
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <rect
+                    x={ROBOT.x - 180}
+                    y={ROBOT.y - 100}
+                    width="360"
+                    height="38"
+                    rx="19"
+                    fill="color-mix(in oklab, var(--bg) 92%, transparent)"
+                    stroke="color-mix(in oklab, var(--ember) 60%, transparent)"
+                    strokeWidth="1"
+                  />
+                  <text
+                    x={ROBOT.x}
+                    y={ROBOT.y - 76}
+                    textAnchor="middle"
+                    fill="var(--ink)"
+                    fontSize="12"
+                    fontFamily="ui-sans-serif, system-ui"
+                  >
+                    {t("s5.lowbat")}
+                  </text>
+                </motion.g>
+              )}
+            </AnimatePresence>
+          </>
+        }
+      />
 
       <div className="absolute left-5 top-5 z-20">
         <AIStatusOrb state={orb} />
@@ -65,36 +143,48 @@ export function SceneMultiAgent() {
         )}
       </AnimatePresence>
 
-      {/* Three device cards floating in your view */}
-      <div className="absolute inset-x-0 top-1/2 z-10 mx-auto grid max-w-3xl -translate-y-1/2 grid-cols-1 gap-3 px-6 md:grid-cols-3">
-        {(["glasses", "home", "car"] as NodeId[]).map((id) => {
-          const nodeSteps = steps.filter((s) => s.node === id);
-          return (
-            <NodeCard
-              key={id}
-              label={t(`s5.${id}`)}
-              steps={nodeSteps.map((s) => ({
-                text: t(s.key),
-                started: elapsed >= s.at,
-                done: elapsed >= s.done,
-              }))}
-            />
-          );
-        })}
+      {/* Peer device cards — positioned at the line endpoints */}
+      <div
+        className="absolute z-10 w-[180px]"
+        style={{ left: `${(PHONE.x - 60) / 800 * 100}%`, top: `${(PHONE.y - 50) / 500 * 100}%` }}
+      >
+        <NodeCard
+          label={t("s5.glasses")}
+          steps={steps
+            .filter((s) => s.node === "glasses")
+            .map((s) => ({ text: t(s.key), started: elapsed >= s.at, done: elapsed >= s.done }))}
+        />
+      </div>
+      <div
+        className="absolute z-10 w-[180px]"
+        style={{ right: `${(800 - CAR.x - 60) / 800 * 100}%`, top: `${(CAR.y - 50) / 500 * 100}%` }}
+      >
+        <NodeCard
+          label={t("s5.car")}
+          steps={steps
+            .filter((s) => s.node === "car")
+            .map((s) => ({ text: t(s.key), started: elapsed >= s.at, done: elapsed >= s.done }))}
+        />
+      </div>
+      {/* Home robot label (small) below robot */}
+      <div className="absolute inset-x-0 z-10 flex justify-center" style={{ top: `${(ROBOT.y + 50) / 500 * 100}%` }}>
+        <div className="rounded-full bg-bg/70 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim backdrop-blur">
+          {t("s5.home")}
+        </div>
       </div>
 
-      {/* Low battery — surfaces from car, but spoken by glasses (one voice) */}
+      {/* Caveat under the bubble */}
       <AnimatePresence>
         {lowBattery && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-x-6 bottom-24 z-10 mx-auto flex max-w-md flex-col gap-1 rounded-2xl border border-ember/40 bg-bg/85 px-5 py-3 backdrop-blur"
+            className="absolute inset-x-0 z-10 mx-auto w-fit max-w-md px-6 text-center text-[11px] text-ink-dim"
+            style={{ bottom: "94px" }}
           >
-            <p className="text-[14px]">{t("s5.lowbat")}</p>
-            <p className="text-[11px] text-ink-dim">{t("s5.lowbatNote")}</p>
-          </motion.div>
+            {t("s5.lowbatNote")}
+          </motion.p>
         )}
       </AnimatePresence>
 
@@ -120,18 +210,18 @@ export function SceneMultiAgent() {
 
 function NodeCard({ label, steps }: { label: string; steps: { text: string; started: boolean; done: boolean }[] }) {
   return (
-    <div className="rounded-2xl border border-line bg-bg/75 p-4 backdrop-blur">
+    <div className="rounded-2xl border border-line bg-bg/80 p-3 backdrop-blur">
       <div className="flex items-center gap-2">
         <motion.span
           className="h-2 w-2 rounded-full bg-hud"
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 1.6, repeat: Infinity }}
         />
-        <span className="text-[12px] tracking-wide text-ink-dim">{label}</span>
+        <span className="text-[11px] tracking-wide text-ink-dim">{label}</span>
       </div>
-      <ul className="mt-3 space-y-1.5 text-[12px]">
+      <ul className="mt-2 space-y-1 text-[11px]">
         {steps.map((s, i) => (
-          <li key={i} className={`flex items-start gap-2 ${s.started ? "text-ink" : "text-ink-dim/45"}`}>
+          <li key={i} className={`flex items-start gap-1.5 ${s.started ? "text-ink" : "text-ink-dim/45"}`}>
             <span className={s.done ? "text-hud" : s.started ? "text-ember" : "text-ink-dim/40"}>
               {s.done ? "✓" : s.started ? "◐" : "○"}
             </span>
