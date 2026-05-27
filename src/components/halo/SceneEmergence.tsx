@@ -2,16 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useT } from "@/lib/i18n";
 import { AIStatusOrb } from "./AIStatusOrb";
-import homeScene from "@/assets/home-scene.jpg";
+import { RoomStage, UserOnSofa } from "./RoomStage";
+import { AgentRobot, type RobotState } from "./AgentRobot";
 
 type EventId = "boil" | "msg" | "pkg" | "filtered";
 
 const schedule: { id: EventId; at: number; duration: number }[] = [
-  { id: "boil", at: 1500, duration: 3000 },
-  { id: "msg", at: 7000, duration: 3000 },
+  { id: "boil", at: 1500, duration: 3500 },
+  { id: "msg", at: 7000, duration: 3500 },
   { id: "filtered", at: 12000, duration: 99000 },
-  { id: "pkg", at: 16000, duration: 3500 },
+  { id: "pkg", at: 16000, duration: 4000 },
 ];
+
+const ROBOT = { x: 600, y: 410 };
+const USER = { x: 210, y: 330 };
 
 export function SceneEmergence() {
   const { t } = useT();
@@ -42,81 +46,79 @@ export function SceneEmergence() {
     return () => { if (raf.current) cancelAnimationFrame(raf.current); };
   }, [t0]);
 
+  // Robot turns toward user when delivering a message
+  const facingUser = active.msg || active.pkg;
+  const robotState: RobotState = Object.values(active).some(Boolean) ? "acting" : "idle";
+
+  // Active speech bubble content from robot
+  const bubble =
+    active.msg ? t("s3.t2") :
+    active.pkg ? t("s3.t3") :
+    active.boil ? t("s3.t1") :
+    null;
+
   return (
-    <div className="relative h-[560px] w-full overflow-hidden bg-bg">
-      <img src={homeScene} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-60" width={1536} height={896} />
-      <div className="absolute inset-0 bg-bg/30" />
+    <div className="relative h-[560px] w-full">
+      <RoomStage
+        svgOverlay={
+          <>
+            <UserOnSofa active={facingUser} />
+            <AgentRobot
+              x={ROBOT.x}
+              y={ROBOT.y}
+              state={robotState}
+              lookAt={facingUser ? USER : null}
+              showSightLine={facingUser}
+            />
+            {/* Speech bubble from robot */}
+            <AnimatePresence>
+              {bubble && (
+                <motion.g
+                  key={bubble}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <rect
+                    x={ROBOT.x - 130}
+                    y={ROBOT.y - 90}
+                    width="260"
+                    height="34"
+                    rx="17"
+                    fill="color-mix(in oklab, var(--bg) 90%, transparent)"
+                    stroke="color-mix(in oklab, var(--hud) 45%, transparent)"
+                    strokeWidth="1"
+                  />
+                  <text
+                    x={ROBOT.x}
+                    y={ROBOT.y - 68}
+                    textAnchor="middle"
+                    fill="var(--ink)"
+                    fontSize="13"
+                    fontFamily="ui-sans-serif, system-ui"
+                  >
+                    {bubble}
+                  </text>
+                </motion.g>
+              )}
+            </AnimatePresence>
+          </>
+        }
+      />
 
       <div className="absolute left-5 top-5 z-20">
         <AIStatusOrb state={Object.values(active).some(Boolean) ? "acting" : "idle"} />
       </div>
 
-      {/* Ambient: warm tint over kitchen direction */}
-      <AnimatePresence>
-        {active.boil && (
-          <motion.div
-            key="warm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="pointer-events-none absolute inset-y-0 right-0 w-2/3"
-            style={{ background: "radial-gradient(circle at 80% 50%, color-mix(in oklab, var(--ember) 35%, transparent), transparent 70%)" }}
-          />
-        )}
-        {active.boil && (
-          <motion.span
-            key="boil-label"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-[12px] tracking-wide text-ember/90"
-          >
-            {t("s3.t1")}
-          </motion.span>
-        )}
-      </AnimatePresence>
-
-      {/* Soft message — bottom of view */}
-      <AnimatePresence>
-        {active.msg && (
-          <motion.div
-            key="msg"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="absolute inset-x-0 bottom-24 mx-auto w-fit max-w-md rounded-full bg-bg/80 px-5 py-2 text-[13px] backdrop-blur"
-          >
-            {t("s3.t2")}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Acted — quiet top bar with undo */}
-      <AnimatePresence>
-        {active.pkg && (
-          <motion.div
-            key="pkg"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-x-6 top-20 mx-auto flex w-fit items-center gap-4 rounded-xl border border-hud/40 bg-bg/85 px-4 py-2.5 backdrop-blur"
-          >
-            <span className="text-[13px]">✓ {t("s3.t3")}</span>
-            <button className="font-mono text-[10px] uppercase tracking-[0.25em] text-hud hover:underline">Undo · 3s</button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Filtered — faint chip bottom-left */}
+      {/* Filtered — faint chip top-right (the robot held it back) */}
       <AnimatePresence>
         {active.filtered && (
           <motion.button
             key="filt"
-            initial={{ opacity: 0, x: -8 }}
+            initial={{ opacity: 0, x: 8 }}
             animate={{ opacity: 0.7, x: 0 }}
             exit={{ opacity: 0 }}
-            className="absolute bottom-24 left-6 flex items-center gap-2 rounded-full bg-bg/60 px-3 py-1.5 text-[11px] text-ink-dim backdrop-blur transition hover:opacity-100 hover:text-ink"
+            className="absolute right-5 top-5 z-20 flex items-center gap-2 rounded-full bg-bg/65 px-3 py-1.5 text-[11px] text-ink-dim backdrop-blur transition hover:opacity-100 hover:text-ink"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-ink-dim" />
             {t("s3.filtered")}

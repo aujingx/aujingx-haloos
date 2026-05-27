@@ -1,6 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import heroImg from "@/assets/home-scene.jpg";
 import { useT } from "@/lib/i18n";
 
 export function Hero() {
@@ -9,19 +8,22 @@ export function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
   return (
     <section ref={ref} className="relative h-[100vh] w-full overflow-hidden">
-      <motion.div style={{ y, scale }} className="absolute inset-0">
-        <img
-          src={heroImg}
-          alt=""
-          className="h-full w-full object-cover"
-          width={1536}
-          height={896}
+      {/* Atmospheric gradient backdrop (no photo — keeps focus on robot demo below) */}
+      <motion.div
+        style={{ y }}
+        className="absolute inset-0"
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(60% 50% at 70% 30%, color-mix(in oklab, var(--hud) 14%, transparent), transparent 70%), radial-gradient(50% 50% at 20% 80%, color-mix(in oklab, var(--ember) 10%, transparent), transparent 70%), var(--bg)",
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/60 via-bg/50 to-bg" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg/30 to-bg" />
       </motion.div>
 
       <motion.div style={{ opacity }} className="relative z-10 flex h-screen flex-col items-center justify-center px-6 text-center">
