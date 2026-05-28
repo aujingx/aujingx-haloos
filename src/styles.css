@@ -121,19 +121,7 @@
 }
 
 /* Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap");
-
-/* CJK-friendly stack — Sora has no Chinese glyphs, chain Noto Sans SC */
-:root {
-  --font-display: "Sora", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-  --font-body: "Inter", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-}
-/* Italic CJK reads poorly — keep upright when page is Chinese */
-:root[lang="zh-CN"] i,
-:root[lang="zh-CN"] em,
-:root[lang="zh-CN"] .italic {
-  font-style: normal;
-}
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
 
 @keyframes orb-pulse {
   0%, 100% { transform: scale(1); opacity: 0.9; }
