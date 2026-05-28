@@ -4,18 +4,16 @@ import { useT } from "@/lib/i18n";
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
-  const { t } = useT();
+  const { t, locale } = useT();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
+  const isZh = locale === "zh";
+
   return (
     <section ref={ref} className="relative h-[100vh] w-full overflow-hidden">
-      {/* Atmospheric gradient backdrop (no photo — keeps focus on robot demo below) */}
-      <motion.div
-        style={{ y }}
-        className="absolute inset-0"
-      >
+      <motion.div style={{ y }} className="absolute inset-0">
         <div
           className="absolute inset-0"
           style={{
@@ -42,7 +40,7 @@ export function Hero() {
           className="mt-6 text-balance text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl md:text-8xl"
         >
           {t("hero.title1")}<br />
-          <span className="italic text-ink-dim">{t("hero.title2")}</span>
+          <span className={isZh ? "text-ink-dim" : "italic text-ink-dim"}>{t("hero.title2")}</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}

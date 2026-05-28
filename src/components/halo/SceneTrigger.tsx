@@ -15,6 +15,7 @@ export function SceneTrigger() {
   const { t } = useT();
   const [c, setC] = useState<Case>("said");
   const [softVisible, setSoftVisible] = useState(true);
+  const [windowClosing, setWindowClosing] = useState(false);
 
   useEffect(() => {
     if (c !== "hinted") return;
@@ -23,10 +24,16 @@ export function SceneTrigger() {
     return () => window.clearTimeout(id);
   }, [c]);
 
+  useEffect(() => {
+    if (c !== "said") { setWindowClosing(false); return; }
+    setWindowClosing(false);
+    const id = window.setTimeout(() => setWindowClosing(true), 1200);
+    return () => window.clearTimeout(id);
+  }, [c]);
+
   const orb: OrbState = c === "said" ? "acting" : c === "hinted" ? "thinking" : "idle";
   const robotState: RobotState = c === "said" ? "acting" : c === "hinted" ? "thinking" : "idle";
 
-  // Robot looks at window when acting, at user when thinking, ahead when quiet
   const lookAt =
     c === "said" ? WINDOW :
     c === "hinted" ? USER :
@@ -46,16 +53,59 @@ export function SceneTrigger() {
               lookAt={lookAt}
               showSightLine={c === "said"}
             />
+
+            {/* Dispatch line: robot → window (smart-home command). The robot doesn't move; it tells the window. */}
+            {c === "said" && (
+              <>
+                <motion.path
+                  d={`M ${ROBOT.x} ${ROBOT.y - 30} Q ${(ROBOT.x + WINDOW.x) / 2 + 30} ${(ROBOT.y + WINDOW.y) / 2 - 60} ${WINDOW.x} ${WINDOW.y + 30}`}
+                  fill="none"
+                  stroke="var(--hud)"
+                  strokeWidth="1.4"
+                  strokeDasharray="3 5"
+                  initial={{ opacity: 0, pathLength: 0 }}
+                  animate={{ opacity: [0.4, 0.9, 0.55], pathLength: 1 }}
+                  transition={{ pathLength: { duration: 0.9 }, opacity: { duration: 2, repeat: Infinity } }}
+                  style={{ filter: "drop-shadow(0 0 6px var(--hud))" }}
+                />
+                {/* tiny "smart-home" tag on the line */}
+                <g>
+                  <rect
+                    x={(ROBOT.x + WINDOW.x) / 2 - 38}
+                    y={(ROBOT.y + WINDOW.y) / 2 - 70}
+                    width="76" height="18" rx="9"
+                    fill="color-mix(in oklab, var(--bg) 90%, transparent)"
+                    stroke="color-mix(in oklab, var(--hud) 50%, transparent)"
+                    strokeWidth="0.8"
+                  />
+                  <text
+                    x={(ROBOT.x + WINDOW.x) / 2} y={(ROBOT.y + WINDOW.y) / 2 - 57}
+                    textAnchor="middle" fill="var(--hud)"
+                    fontSize="9" fontFamily="ui-monospace, monospace"
+                    style={{ letterSpacing: "0.15em" }}
+                  >
+                    SMART HOME →
+                  </text>
+                </g>
+                {/* Window "closing" overlay */}
+                <motion.rect
+                  x="540" y="60" width="180" height={windowClosing ? 160 : 0}
+                  fill="color-mix(in oklab, var(--hud) 18%, var(--bg))"
+                  stroke="var(--hud)" strokeWidth="1.2"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: windowClosing ? 160 : 0, opacity: windowClosing ? 0.55 : 0 }}
+                  transition={{ duration: 1.4, ease: "easeInOut" }}
+                />
+              </>
+            )}
           </>
         }
       />
 
-      {/* corner orb */}
       <div className="absolute left-5 top-5 z-20">
         <AIStatusOrb state={orb} />
       </div>
 
-      {/* Agent voice — overlaid */}
       <div className="pointer-events-none absolute inset-x-0 top-20 z-10 flex justify-center px-6">
         <AnimatePresence mode="wait">
           {c === "said" && (
@@ -64,9 +114,10 @@ export function SceneTrigger() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-2xl bg-bg/85 px-5 py-3 text-center text-[15px] backdrop-blur"
+              className="flex flex-col items-center gap-1 rounded-2xl bg-bg/85 px-5 py-3 text-center backdrop-blur"
             >
-              {t("s2.r1")}
+              <span className="text-[15px]">{t("s2.r1")}</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">{t("s2.r1note")}</span>
             </motion.div>
           )}
           {c === "hinted" && softVisible && (
@@ -95,7 +146,6 @@ export function SceneTrigger() {
         </AnimatePresence>
       </div>
 
-      {/* Scenario picker */}
       <div className="absolute inset-x-0 bottom-6 z-10 flex justify-center gap-2 px-6">
         {(["said", "hinted", "nothing"] as Case[]).map((id) => (
           <button
