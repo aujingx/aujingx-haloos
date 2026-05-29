@@ -1,83 +1,156 @@
+## 目标
 
-# Refocus the demo around the robot, not the wearer
+不只是换文字。重做 **提示 / 执行 / 协同** 三幕的交互逻辑，让 Demo 体现 "AI 新 OS" 而非智能家居面板；同时重写中文，让中英文各自像本土团队写的。  
+注意以下内容只是对策划的描述，不能直接写在页面里面！！！！ 页面尽量减少或完全没有说明语言，最好是用户一看就懂这个demo要如何操作，是什么意思。
 
-The current demo accidentally reads as a "smart glasses" product — a first-person POV with a gaze cursor over a static living-room photo. For a robot company (Loona, Clicbot), the protagonist of every scene must be a **visible robot in the room**, and the viewer must understand within 2 seconds what the robot is sensing, thinking, and doing.
+---
 
-## 1. Reframe: third-person "robot in the room", not first-person POV
+## 1. 重命名（五幕）
 
-Replace the full-bleed POV background with a consistent, lightly stylized **stage view of a room** seen from a neutral camera. The cast is always visible:
 
-- **A human silhouette / character** (the user) — drawn, not photographed, so it reads as an illustration instead of "a guy on a sofa".
-- **A small visible robot** (Loona-like rounded body, expressive eye) somewhere in the scene. The robot is the Agent; whenever the orb is "listening / thinking / acting", the robot itself shows it (eye pulse, head turn, small move).
-- **A few interactable objects** (cup, window, door, lamp) as simple shapes with labels on hover.
+| 旧   | 新 (中) | 新 (en)      |
+| --- | ----- | ----------- |
+| 在场  | 感知    | Sense       |
+| 唤起  | 唤起    | Wake        |
+| 浮现  | 提示    | Notify      |
+| 执行  | 执行    | Act         |
+| 协同  | 协同    | Orchestrate |
 
-This gives one shared mental model across all five scenes: *the robot is here, it perceives, it decides, it acts*.
 
-Technical note: build a single `<RoomStage>` component with an inline SVG room (couch outline, table, window, door) and an `<AgentRobot>` SVG that accepts `state` and `position` props. All five scenes compose this same stage so the viewer's eye doesn't have to re-learn the layout. Move the existing `home-scene.jpg` to a subtle blurred backdrop or drop it entirely.
+更新 `i18n.tsx` 所有相关 key (nav / fq / scene labels)。
 
-## 2. Make perception channels explicit and multimodal
+---
 
-The viewer needs to *see* how the robot senses the user. Show three input channels with small, always-on indicators near the robot:
+## 2. 「提示」(Notify) — 重做：呈现三种载体
 
-- **Vision** (camera icon) — lights up when the robot is looking at someone/something. A thin line from the robot's eye to its current focus target.
-- **Voice** (mic icon) — lights up when the user speaks; a small waveform appears above the user.
-- **Gesture / posture** (hand icon) — lights up when the user raises a hand, shifts posture, etc.
+**核心点子**：同一条信息，根据用户身上有什么设备，以不同方式浮现。让用户直观看到「Agent 不依赖固定屏幕」。
 
-In Scene 1 (Presence), the demo becomes interactive in a way that is *obviously* about perception: hovering different parts of the scene triggers different channels.
+### 交互
 
-- Hover the **user character** → the robot turns its eye to the user, "Vision" lights up.
-- Click a **"speak" button** floating near the user → "Voice" lights up, robot orients.
-- Click a **"wave" button** → "Gesture" lights up.
+顶部放 3 个 toggle chip：**无设备 · 智能眼镜 · 手表**（默认「无设备」）。下方场景画面随之切换呈现方式。同一条消息（如「小明：晚上一起看电影？」）在三种载体上对照展示。
 
-A one-line caption at the bottom changes with each interaction (e.g., "Saw you.", "Heard you.", "Noticed your hand.") so the viewer instantly grasps "this robot perceives me in three ways".
+### 三种载体的视觉
 
-## 3. Per-scene revisions
+- **无设备**：房间舞台里的机器人 → 头顶柔光呼吸 + 轻微转向用户 + 一句低声播报（用 SVG 光晕环 + 音波线条表达）。无文字弹窗，强调"环境式存在"。
+- **智能眼镜**：画面左下叠一个极简 👓 浮标 + 视野右下角一张窄卡片（fixed 比例、低对比、3 秒淡出）。强调「视野边缘、低侵入」。
+- **手表**：右下角浮出一个手表外形 SVG，震动波纹动画 + 一句摘要文本（≤12字）。强调「触觉先于视觉」。
 
-**Scene 1 · Presence** — Replace the gaze-cursor-over-photo with the room stage above. The robot sits/stands somewhere visible (not on the sofa). Demonstrate the three perception channels as described. Remove the "move the mouse, that's your gaze" hint — it implied first-person.
+### 三条消息按时间触发
 
-**Scene 2 · Trigger** — Keep the three trigger cases, but show the robot reacting on stage: turning to look, then either acting, asking, or staying still. Make the "did nothing" case visibly *quiet* — the robot doesn't move, but a soft indicator shows it considered and chose not to interrupt.
+- 门口有人（环境通知 → 三种载体都低强度）
+- 小明：晚上一起看电影？（社交 → 三种载体都展示，对比清晰）
+- 一条被过滤掉的推送（任何载体都不打扰，仅事后小字"已为你隐去 1 条"；无设备时没有声音）
 
-**Scene 3 · Emergence** — Notifications now visibly originate from the robot (small speech bubble), not from the top of the screen. The robot prioritizes by physically turning toward the user only for the message that matters; the filtered ones float in and dim out near the robot, never reaching the user.
+### 文件
 
-**Scene 4 · Action** — Keep the "fetch the cup" arc, but animate the robot actually traversing the stage to the cup and back. The narration HUD stays but is shorter. Fix copy:
-- `s4.stopped`: 中文 "停下了，要换个方式吗？" → "停下了，需要别的指示吗？"; 英文 "Stopped. Try another way?" → "Stopped. What would you like instead?"
-- Align other zh/en pairs so meaning matches exactly (audit all `s*` keys).
+- 新建 `src/components/halo/NotifySurface.tsx`（三种载体的子视图）
+- 改写 `SceneEmergence.tsx` → `SceneNotify.tsx`（或保留文件名只改内容），加 surface 切换 state
+- 删除从机器人嘴里弹出的对话气泡（不再是单一呈现方式）
 
-**Scene 5 · Together (multi-agent)** — This is the scene most missing the robot. Reframe as:
-- The **home robot** (Loona) is the one the user speaks to.
-- It coordinates with the **car** and the **glasses/phone** as peer agents.
-- Show all three as small device cards *with the home robot visibly central on stage*, sending lines out to the car and glasses cards. The "low battery" message comes back through the home robot — one voice, spoken on stage by the visible robot, not by a floating panel.
+---
 
-## 4. Copy fixes (Chinese tone + zh/en parity)
+## 3. 「执行」(Act) — 重写为「帮我找手机」
 
-- `hero.body` 中文 "没有 App 之后，系统只剩一个 Agent 在你身边。下面五幕，是它的样子。" → "当 App 不再是入口，只剩一个 Agent 留在你身边。下面五种场景，是它的样子。"
-  English match: "When apps stop being the entry point, only one agent stays with you. Five scenes show what that looks like."
-- `fq.eyebrow` "五幕" → "五种场景" / "Five scenes" (already English, keep).
-- Audit every `s1`–`s5` key so the Chinese and English say the *same* thing, not just similar things. Notable mismatches to fix in addition to `s4.stopped`:
-  - `s1.firstHint` will be replaced entirely (no more gaze hint).
-  - `s4.micNote` 中文 "（真实场景：直接说就好）" — keep, but make sure English matches tone.
-  - `s5.lowbatNote` — re-align both versions to the new "home robot relays car's status" framing.
+**核心点子**：尊重真实物理边界。机器人只搜索 / 定位 / 说明，不递送、不拟人化。
 
-## 5. Default locale → English
+### 触发
 
-In `src/lib/i18n.tsx`, change `useState<Locale>("zh")` → `useState<Locale>("en")`. Keep the localStorage override so returning users keep their choice. Update `<html lang>` if set anywhere (check `__root.tsx`).
+用户说"帮我找手机"。
 
-## Technical section
+### Agent 多阶段进度（左侧叙述流 + 舞台动画同步）（注意以下内容只是描述，不能直接写在页面中）
 
-Files to touch:
+1. **确认任务**：你在找手机。
+2. **搜索区域**：沙发 · 茶几 · 玄关 · 卧室（舞台上四个区域依次高亮扫描动画）
+3. **检测信号**：茶几附近捕捉到蓝牙/声音线索（舞台上画一圈信号波纹）
+4. **重新定位**：手机在沙发靠垫下面（机器人移动到沙发边停下）
+5. **告知用户**：我停在这里，灯光指向位置（机器人头顶射出一束光柱指向坐垫，**不**拿起手机）
 
-- **New** `src/components/halo/RoomStage.tsx` — shared SVG stage (room outline, sofa, table, window, door) + slot for objects/robot/user.
-- **New** `src/components/halo/AgentRobot.tsx` — SVG robot with `state: idle|listening|thinking|acting|handoff` and `position: {x,y}`; eye pulse + small idle bob via Framer Motion.
-- **New** `src/components/halo/PerceptionChannels.tsx` — three small indicators (vision/voice/gesture) that accept an `active` prop.
-- **Rewrite** `src/components/halo/ScenePresence.tsx` — uses RoomStage + AgentRobot + PerceptionChannels; replaces mouse-as-gaze with explicit "look / speak / wave" interactions.
-- **Update** `SceneTrigger.tsx`, `SceneEmergence.tsx`, `SceneAction.tsx`, `SceneMultiAgent.tsx` — compose RoomStage + AgentRobot. Scene 4 animates robot position along a path. Scene 5 places the home robot center-stage and draws connection lines to car/glasses cards.
-- **Update** `src/lib/i18n.tsx` — default locale `en`; rewrite the listed keys; audit zh/en parity for all `s*` and `hero.*` keys.
-- **Update** `src/components/halo/Hero.tsx` and `FiveQuestions.tsx` — replace "五幕" wording; tighten the hero body line.
-- Drop or de-emphasize `src/assets/home-scene.jpg` (the photo is the source of the "static guy on sofa" feeling).
+### 停止
 
-No backend/data changes. Pure frontend + copy.
+"举手让它停" 保留。停下后文案：「停下了。怎么了？」(zh) / "Stopped. Anything else?" (en)
 
-## Out of scope (per earlier instruction)
+### 文件
 
-- Trade-offs page — not adding back.
-- New routes or auth — not adding.
+- 重写 `SceneAction.tsx`：删除 cup pickup 路径动画，改为区域扫描 + 信号定位 + 光柱指示
+- `RoomStage.tsx`：加入「沙发坐垫下手机」的小道具元素（隐藏 → 揭示）
+- `AgentRobot.tsx`：加一个 `pointLight: {x, y}` prop，渲染从机器人头顶到坐标的光锥
+
+---
+
+## 4. 「协同」(Orchestrate) — 扩展为多线程任务
+
+**场景**：用户说"我去见客户，晚上 9 点回来"。Agent 拆出 7 条并行任务，进度条同时推进。
+
+### 节点
+
+- 车辆（预冷空调、规划路线、检查电量）
+- 家庭安全（关燃气、关非必要电源）
+- 家中空调（离家模式 + 8:40 预冷）
+- 扫地机器人（用户离家后启动）
+- 资料（检查客户资料 / 报价单 / 附件）
+- 消息（给客户发"我已出发，稍后见"）
+- 风险汇总（仅在出现冲突时弹出）
+
+### 视觉
+
+- 中心：家里的机器人 + 用户在沙发
+- 周围排布 7 个节点卡片（用网格而非现在的左右两栏），每张卡片：图标 + 标签 + 1-2 条任务，状态 `pending → running (◐) → done (✓)`
+- 连接线：从机器人发散到每个节点，按 task 启动时间依次点亮
+- **风险汇总气泡**：当"资料"检测出附件缺失 OR "车"电量不足时，机器人顶部冒出一条问询气泡——只汇总关键风险，不打扰其他成功的子任务
+- 底部加一行说明：「7 件事同时做。机器人只在需要你决定时打断你。」(zh) / "Seven things at once. It only interrupts when it needs you." (en)
+
+### 文件
+
+- 重写 `SceneMultiAgent.tsx`：从 `NodeCard` 升级为 7-node grid，新增 `risks` 计算逻辑
+- i18n 新增 ~20 个 key (`s5.car.*`, `s5.safety.*`, `s5.hvac.*`, `s5.vacuum.*`, `s5.docs.*`, `s5.msg.*`, `s5.risk.*`)
+
+---
+
+## 5. 中文文案重写原则
+
+把中文从"直译英文"改为"中国互联网产品自然语感"。原则：
+
+- 短句、口语化、去掉书面化连词（"当...，则..."）
+- 不用"它/系统/Agent"自称，用动词主语或省略主语
+- 善用句号断句而不是逗号长句
+- 避免英文标点逻辑（破折号 → 句号或括号）
+
+### 重点重写示例
+
+- hero.body 中: 「当 App 不再是入口，剩下的，是一个在你身边的机器人。下面五个场景，是它的样子。」→ 「不再打开 App。只有一台机器人，在你身边。看看它会怎么做。」
+- fq.title: 「没有 App 之后，剩下什么。」→ 「App 之外，是什么样。」
+- fq.q1.b 「机器人怎么知道你在。」→ 「它怎么知道你在。」
+- s1.cap.idle 「它在。眼睛睁着，耳朵开着，留意你的动作。」→ 「它在。看着，听着，留意你。」
+- s2.r2note「不理它，3 秒后自动消失。」→ 「不理它，3 秒后就走。」
+- s4.stopped 「停下了。还有什么需要？」→ 「停了。还需要什么？」
+- s5.lowbatNote 整句重写
+- 所有 `s3.*` 和新的 `s4.*` `s5.*` key 都按这个标准重写
+
+英文也同步审一遍，保证地道（短主谓结构、避免直译中文的痕迹）。
+
+---
+
+## 6. 新增结尾标语
+
+页面最底部（Footer 上方）加一个独立的全宽 section：
+
+```
+one agent, no apps.
+```
+
+- 居中、超大字号、低对比 ink-dim、字距宽
+- 中英文页面**都显示英文原文**（这是 slogan，不翻译）
+- 上下各留 ~120px padding
+
+新建 `src/components/halo/Closer.tsx`，在 `routes/index.tsx` 里放到 `<Footer />` 之前。
+
+---
+
+## 技术说明
+
+- 纯前端改动，无后端 / 数据库 / 路由新增
+- 新文件：`NotifySurface.tsx`, `Closer.tsx`
+- 重写：`SceneEmergence.tsx`, `SceneAction.tsx`, `SceneMultiAgent.tsx`, `i18n.tsx`
+- 小改：`Nav.tsx` / `FiveQuestions.tsx` 中的 label 引用（key 改名后跟着改）
+- 路由命名保留（`scene-emergence` 等 anchor 不动，避免外链失效）
+- 不动 `RoomStage` 的整体构图，仅在 Act 场景里加手机道具、在 Notify 场景里支持「无舞台」呈现切换
