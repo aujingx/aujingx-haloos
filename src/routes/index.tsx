@@ -3,6 +3,7 @@ import { Nav } from "@/components/halo/Nav";
 import { Hero } from "@/components/halo/Hero";
 import { FiveQuestions } from "@/components/halo/FiveQuestions";
 import { DemoStage } from "@/components/halo/DemoStage";
+import { Closer } from "@/components/halo/Closer";
 import { Footer } from "@/components/halo/Footer";
 
 export const Route = createFileRoute("/")({
@@ -26,6 +27,7 @@ function Index() {
       <Hero />
       <FiveQuestions />
       <DemoStage />
+      <Closer />
       <Footer />
     </main>
   );
